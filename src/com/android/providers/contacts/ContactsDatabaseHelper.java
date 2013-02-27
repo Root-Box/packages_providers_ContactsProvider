@@ -108,7 +108,7 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
      *   700-799 Jelly Bean
      * </pre>
      */
-    static final int DATABASE_VERSION = 707;
+    static final int DATABASE_VERSION = 708;
 
     private static final String DATABASE_NAME = "contacts2.db";
     private static final String DATABASE_PRESENCE = "presence_db";
@@ -358,6 +358,8 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
                 + Contacts.CUSTOM_RINGTONE;
         public static final String CONCRETE_CUSTOM_VIBRATION = Tables.CONTACTS + "."
                 + Contacts.CUSTOM_VIBRATION;
+        public static final String CONCRETE_CUSTOM_NOTIFICATION = Tables.CONTACTS + "."
+                + Contacts.CUSTOM_NOTIFICATION;
         public static final String CONCRETE_SEND_TO_VOICEMAIL = Tables.CONTACTS + "."
                 + Contacts.SEND_TO_VOICEMAIL;
         public static final String CONCRETE_LOOKUP_KEY = Tables.CONTACTS + "."
@@ -390,6 +392,8 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
                 Tables.RAW_CONTACTS + "." + RawContacts.CUSTOM_RINGTONE;
         public static final String CONCRETE_CUSTOM_VIBRATION =
                 Tables.RAW_CONTACTS + "." + RawContacts.CUSTOM_VIBRATION;
+        public static final String CONCRETE_CUSTOM_NOTIFICATION =
+                Tables.RAW_CONTACTS + "." + RawContacts.CUSTOM_NOTIFICATION;
         public static final String CONCRETE_SEND_TO_VOICEMAIL =
                 Tables.RAW_CONTACTS + "." + RawContacts.SEND_TO_VOICEMAIL;
         public static final String CONCRETE_LAST_TIME_CONTACTED =
@@ -946,6 +950,7 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
                 Contacts.PHOTO_ID + " INTEGER REFERENCES data(_id)," +
                 Contacts.PHOTO_FILE_ID + " INTEGER REFERENCES photo_files(_id)," +
                 Contacts.CUSTOM_RINGTONE + " TEXT," +
+                Contacts.CUSTOM_NOTIFICATION + " TEXT," +
                 Contacts.SEND_TO_VOICEMAIL + " INTEGER NOT NULL DEFAULT 0," +
                 Contacts.TIMES_CONTACTED + " INTEGER NOT NULL DEFAULT 0," +
                 Contacts.LAST_TIME_CONTACTED + " INTEGER," +
@@ -979,6 +984,7 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
                         RawContacts.AGGREGATION_MODE_DEFAULT + "," +
                 RawContactsColumns.AGGREGATION_NEEDED + " INTEGER NOT NULL DEFAULT 1," +
                 RawContacts.CUSTOM_RINGTONE + " TEXT," +
+                RawContacts.CUSTOM_NOTIFICATION + " TEXT," +
                 RawContacts.SEND_TO_VOICEMAIL + " INTEGER NOT NULL DEFAULT 0," +
                 RawContacts.TIMES_CONTACTED + " INTEGER NOT NULL DEFAULT 0," +
                 RawContacts.LAST_TIME_CONTACTED + " INTEGER," +
@@ -998,7 +1004,7 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
                 RawContacts.SYNC2 + " TEXT, " +
                 RawContacts.SYNC3 + " TEXT, " +
                 RawContacts.SYNC4 + " TEXT, " +
-                RawContacts.CUSTOM_VIBRATION + " TEXT " +
+                RawContacts.CUSTOM_VIBRATION + " TEXT, " +
                 RawContacts.IS_RESTRICTED + " INTEGER " +
         ");");
 
@@ -1586,7 +1592,7 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
                 + RawContactsColumns.CONCRETE_SYNC2 + " AS " + RawContacts.SYNC2 + ","
                 + RawContactsColumns.CONCRETE_SYNC3 + " AS " + RawContacts.SYNC3 + ","
                 + RawContactsColumns.CONCRETE_SYNC4 + " AS " + RawContacts.SYNC4 + ","
-                + RawContactsColumns.CONCRETE_IS_RESTRICTED + " AS " + RawContacts.IS_RESTRICTED;;
+                + RawContactsColumns.CONCRETE_IS_RESTRICTED + " AS " + RawContacts.IS_RESTRICTED;
 
         String baseContactColumns =
                 Contacts.HAS_PHONE_NUMBER + ", "
@@ -1603,6 +1609,8 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
                         + " AS " + RawContacts.CUSTOM_RINGTONE + ","
                 + ContactsColumns.CONCRETE_CUSTOM_VIBRATION
                         + " AS " + RawContacts.CUSTOM_VIBRATION + ","
+                + ContactsColumns.CONCRETE_CUSTOM_NOTIFICATION
+                        + " AS " + RawContacts.CUSTOM_NOTIFICATION + ","
                 + ContactsColumns.CONCRETE_SEND_TO_VOICEMAIL
                         + " AS " + RawContacts.SEND_TO_VOICEMAIL + ","
                 + ContactsColumns.CONCRETE_LAST_TIME_CONTACTED
@@ -1667,6 +1675,7 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
         String rawContactOptionColumns =
                 RawContacts.CUSTOM_RINGTONE + ","
                 + RawContacts.CUSTOM_VIBRATION + ","
+                + RawContacts.CUSTOM_NOTIFICATION + ","
                 + RawContacts.SEND_TO_VOICEMAIL + ","
                 + RawContacts.LAST_TIME_CONTACTED + ","
                 + RawContacts.TIMES_CONTACTED + ","
@@ -1700,6 +1709,8 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
                         + " AS " + Contacts.CUSTOM_RINGTONE + ", "
                 + ContactsColumns.CONCRETE_CUSTOM_VIBRATION
                         + " AS " + Contacts.CUSTOM_VIBRATION + ", "
+                + ContactsColumns.CONCRETE_CUSTOM_NOTIFICATION
+                        + " AS " + Contacts.CUSTOM_NOTIFICATION + ", "
                 + contactNameColumns + ", "
                 + baseContactColumns + ", "
                 + ContactsColumns.CONCRETE_LAST_TIME_CONTACTED
@@ -2418,6 +2429,13 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
             // which resulted in losing some of the rows from the stats table.
             rebuildSqliteStats = true;
             oldVersion = 707;
+        }
+
+        if (oldVersion < 708) {
+            // Prior to this version, we didn't rebuild the stats table after drop operations,
+            // which resulted in losing some of the rows from the stats table.
+            rebuildSqliteStats = true;
+            oldVersion = 708;
         }
 
         if (upgradeViewsAndTriggers) {
