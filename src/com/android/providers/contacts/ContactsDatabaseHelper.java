@@ -2434,6 +2434,7 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
         if (oldVersion < 708) {
             // Prior to this version, we didn't rebuild the stats table after drop operations,
             // which resulted in losing some of the rows from the stats table.
+   	    upgradeToVersion708(db);
             rebuildSqliteStats = true;
             oldVersion = 708;
         }
@@ -3856,6 +3857,10 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
                 "UPDATE " + Tables.RAW_CONTACTS +
                 "   SET " + RawContacts.CUSTOM_VIBRATION + "=NULL" +
                 " WHERE " + RawContacts._ID + " NOT NULL");
+    }
+
+    private void upgradeToVersion708(SQLiteDatabase db) {
+        db.execSQL("ALTER TABLE contacts ADD custom_notification TEXT DEFAULT NULL;");
     }
 
     public String extractHandleFromEmailAddress(String email) {
