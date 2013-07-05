@@ -375,6 +375,7 @@ public class LegacyApiSupport {
         peopleProjectionMap.put(People.LAST_TIME_CONTACTED, People.LAST_TIME_CONTACTED);
         peopleProjectionMap.put(People.CUSTOM_RINGTONE, People.CUSTOM_RINGTONE);
         peopleProjectionMap.put(People.CUSTOM_VIBRATION, People.CUSTOM_VIBRATION);
+        peopleProjectionMap.put(People.CUSTOM_NOTIFICATION, People.CUSTOM_NOTIFICATION);
         peopleProjectionMap.put(People.SEND_TO_VOICEMAIL, People.SEND_TO_VOICEMAIL);
         peopleProjectionMap.put(People.STARRED, People.STARRED);
         peopleProjectionMap.put(People.PRIMARY_ORGANIZATION_ID, People.PRIMARY_ORGANIZATION_ID);
@@ -575,8 +576,10 @@ public class LegacyApiSupport {
                         + " AS " + People.LAST_TIME_CONTACTED + ", " +
                 Tables.RAW_CONTACTS + "." + RawContacts.CUSTOM_RINGTONE
                         + " AS " + People.CUSTOM_RINGTONE + ", " +
-                        Tables.RAW_CONTACTS + "." + RawContacts.CUSTOM_VIBRATION
+                Tables.RAW_CONTACTS + "." + RawContacts.CUSTOM_VIBRATION
                         + " AS " + People.CUSTOM_VIBRATION + ", " +
+                Tables.RAW_CONTACTS + "." + RawContacts.CUSTOM_NOTIFICATION
+                        + " AS " + People.CUSTOM_NOTIFICATION + ", " +
                 Tables.RAW_CONTACTS + "." + RawContacts.SEND_TO_VOICEMAIL
                         + " AS " + People.SEND_TO_VOICEMAIL + ", " +
                 Tables.RAW_CONTACTS + "." + RawContacts.STARRED
