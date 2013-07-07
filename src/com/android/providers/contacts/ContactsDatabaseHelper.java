@@ -2434,7 +2434,9 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
         if (oldVersion < 708) {
             // Prior to this version, we didn't rebuild the stats table after drop operations,
             // which resulted in losing some of the rows from the stats table.
-            rebuildSqliteStats = true;
+	    rebuildSqliteStats = true;
+   	    upgradeToVersion708(db);
+	    upgradeViewsAndTriggers = true;
             oldVersion = 708;
         }
 
@@ -3855,6 +3857,21 @@ public class ContactsDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(
                 "UPDATE " + Tables.RAW_CONTACTS +
                 "   SET " + RawContacts.CUSTOM_VIBRATION + "=NULL" +
+                " WHERE " + RawContacts._ID + " NOT NULL");
+    }
+
+    private void upgradeToVersion708(SQLiteDatabase db) {
+	Log.i(TAG, "creating column " + Contacts.CUSTOM_NOTIFICATION + " in table " + Tables.CONTACTS);
+        db.execSQL("ALTER TABLE " + Tables.CONTACTS + " ADD " + Contacts.CUSTOM_NOTIFICATION + " TEXT DEFAULT NULL;");
+	Log.i(TAG, "creating column " + RawContacts.CUSTOM_NOTIFICATION + " in table " + Tables.RAW_CONTACTS);
+        db.execSQL("ALTER TABLE " + Tables.RAW_CONTACTS + " ADD " + RawContacts.CUSTOM_NOTIFICATION + " TEXT DEFAULT NULL;");
+        db.execSQL(
+                "UPDATE " + Tables.CONTACTS +
+                "   SET " + Contacts.CUSTOM_NOTIFICATION + "=NULL" +
+                " WHERE " + Contacts._ID + " NOT NULL");
+        db.execSQL(
+                "UPDATE " + Tables.RAW_CONTACTS +
+                "   SET " + RawContacts.CUSTOM_NOTIFICATION + "=NULL" +
                 " WHERE " + RawContacts._ID + " NOT NULL");
     }
 
